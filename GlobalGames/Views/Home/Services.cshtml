@@ -36,16 +36,19 @@
 						<div>
 							<label>Nome</label><br>
 							<input asp-for="Nome" type="text" placeholder="Nome"/>
+							<span asp-validation-for="Nome" class="text-warning"></span>
 						</div>
 						
 						<div>
 							<label>Email</label><br>
 							<input asp-for="Email" type="email" placeholder="Endereço de email"/>
+							<span asp-validation-for="Email" class="text-warning"></span>
 						</div>
 						
 						<div>
 							<label>Mensagem</label><br>
 							<textarea placeholder="Mensagem" asp-for="Message"></textarea>
+							<span asp-validation-for="Message" class="text-warning"></span>
 						</div>
 						
 						<button class="button_1" type="submit">Enviar</button>
@@ -54,3 +57,7 @@
 			</aside>
 		</div>
 </section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

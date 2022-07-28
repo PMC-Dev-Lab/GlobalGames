@@ -5,10 +5,15 @@
 <section id="newsletter">
 		<div class="container">
 			<h1>Subscreve a nossa newsletter</h1>
-			<form asp-action="EmailSend">
+			<form asp-controller="Home" asp-action="EmailSend">
 				<input asp-for="Email" type="email" placeholder="Coloque o email..."/>
+				<span asp-validation-for="Email" class="text-warning"></span>
 				<button type="submit" class="button_1">Subscrever</button>
 			</form>
 		</div>
 </section>
 
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

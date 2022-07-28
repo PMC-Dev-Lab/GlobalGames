@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html>
+        <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width">
+            <meta name="Description" content="desenvolvimento de jogos e realidade virtual">
+            <meta name="Keywords" content="realidade virtual, criamos jogos, desenvolvemos jogos">
+            <title>@ViewData["Title"] - Global Games | Welcome</title>
+            <link rel="stylesheet" href="~/css/style.css" />
+        </head>
+
+<body>
+
+	<header>
+		
+		<div class="container">
+		
+			<div id="logo">
+				<h1><span class="destaque">Global</span> Games Enterprise</h1>
+			</div>
+			
+			<nav>
+				
+				<ul>
+					<li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Home">Home</a><li>
+					<li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">Sobre</a></li>
+					<li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Services">Serviços</a></li>					
+				</ul>
+			</nav>
+		</div>
+	</header>
+	<section id="showcase">
+		<div class="container">
+			<h1>A melhor plataforma de realidade virtual</h1>
+			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus facilisis lectus at sapien dapibus facilisis. Ut maximus nunc urna, non congue diam mattis ut. Fusce eros leo, pulvinar ut ultrices non, aliquam nec quam. Integer gravida ut mauris ac ultrices. Phasellus iaculis elementum condimentum.</p>	
+		</div>
+	</section>
+	
+	 <partial name="_Newsletter" />
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+	<footer>
+		<p>Global Games, Copyright &copy; 2017</p>	
+	</footer>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

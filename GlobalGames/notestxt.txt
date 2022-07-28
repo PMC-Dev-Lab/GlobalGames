@@ -1,0 +1,27 @@
+﻿4. Implemente o projecto Global Games usando um projecto ASP.NET MVC, tendo em conta o seguinte:
+
+
+a. Deverá usar o controller Home com três actions para as páginas Home, Sobre e Serviços.  - FEITO
+
+b. Deverá criar uma base de dados com duas tabelas. 
+Uma para apenas guardar o email inserido para subscrever a newsletter, 
+e outra para os dados inseridos no formulário orçamento.
+
+c. A zona da newsletter, como aparece nas três páginas, 
+deverá ser uma vista parcial, com a sua própria action.
+
+d. O projecto já tem todo o seu design completo e está responsivo. 
+Deve continuar assim, não podendo o front-end sofrer qualquer 
+alteração e não esquecendo que tudo o que é comum poderá ser um layout partilhado. - FEITO
+
+
+e. Publique o site e envie o respetivo link pela conversa privada.
+
+
+1. Em ambos os projectos, MyLeasing e GlobalGames, crie as seguintes funcionalidades:
+
+a. Login e logout
+
+b. Registar-se como user, passando a partir de aí poder já efetuar login.
+
+c. Alterar os dados.

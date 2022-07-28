@@ -1,0 +1,14 @@
+﻿@*@model GlobalGames.Data.Entities.Subscriber*@
+
+@model GlobalGames.Models.NewsletterViewModel
+
+<section id="newsletter">
+		<div class="container">
+			<h1>Subscreve a nossa newsletter</h1>
+			<form asp-action="EmailSend">
+				<input asp-for="Email" type="email" placeholder="Coloque o email..."/>
+				<button type="submit" class="button_1">Subscrever</button>
+			</form>
+		</div>
+</section>
+

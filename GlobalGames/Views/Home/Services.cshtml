@@ -1,0 +1,56 @@
+﻿@model GlobalGames.Models.LeadViewModel	
+
+
+<section id="main">
+		<div class="container">
+			<article id="main-col">
+				<h1 class="titulo">Serviços</h1>
+				
+				<ul id="servicos">
+					<li>
+						<h3>Jogos Unity</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu ante faucibus, congue nunc vitae, bibendum mauris. Praesent dui nibh, tincidunt at finibus vitae, feugiat non purus. </p>
+						<p>Preços: 1.000&euro; - 3.000&euro;</p>
+					</li>
+					
+					<li>
+						<h3>Jogos Unreal</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu ante faucibus, congue nunc vitae, bibendum mauris. Praesent dui nibh, tincidunt at finibus vitae, feugiat non purus. </p>
+						<p>Preços: 2.500&euro; - 6.000&euro;</p>
+					</li>
+					
+					<li>
+						<h3>Desenvolvimento de personagens</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu ante faucibus, congue nunc vitae, bibendum mauris. Praesent dui nibh, tincidunt at finibus vitae, feugiat non purus. </p>
+						<p>Preços: 3.000&euro; - 7.500&euro;</p>
+					</li>
+					
+				</ul>
+				
+			</article>
+			
+			<aside id="sidebar">
+				<div class="dark">
+					<h3>Peça um orçamento</h3>
+					<form asp-action="LeadSend" class="orcamento">
+						<div>
+							<label>Nome</label><br>
+							<input asp-for="Nome" type="text" placeholder="Nome"/>
+						</div>
+						
+						<div>
+							<label>Email</label><br>
+							<input asp-for="Email" type="email" placeholder="Endereço de email"/>
+						</div>
+						
+						<div>
+							<label>Mensagem</label><br>
+							<textarea placeholder="Mensagem" asp-for="Message"></textarea>
+						</div>
+						
+						<button class="button_1" type="submit">Enviar</button>
+					</form>
+				</div>
+			</aside>
+		</div>
+</section>

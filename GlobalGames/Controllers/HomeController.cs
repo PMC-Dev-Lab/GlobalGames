@@ -59,14 +59,9 @@ namespace GlobalGames.Controllers
         {
            if(ModelState.IsValid)
             {
-                string path = string.Empty;
+                string subscriberEmail = model.Email ?? string.Empty;
 
-                if(model.Email != null)
-                {
-                    path = model.Email;
-                }
-
-                var subscriber = _converterHelper.ToSubscriber(model, path, true);
+                var subscriber = _converterHelper.ToSubscriber(model, subscriberEmail, true);
                 await _subscriberRepository.CreateAsync(subscriber);
             }
              

@@ -245,9 +245,7 @@
 
             $forms.each(function () {
                 var info = validationInfo(this);
-                if (info) {
-                    info.attachValidation();
-                }
+                info.attachValidation();
             });
         }
     };

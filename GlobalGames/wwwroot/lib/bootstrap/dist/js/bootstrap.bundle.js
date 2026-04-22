@@ -2014,7 +2014,7 @@
     // differently when margins are applied to it. The margins are included in
     // the box of the documentElement, in the other cases not.
     if (!isIE10 && isHTML) {
-      var marginTop = parseFloat(styles.marginTop, 10);
+      var marginTop = parseFloat(styles.marginTop);
       var marginLeft = parseFloat(styles.marginLeft, 10);
 
       offsets.top -= borderTopWidth - marginTop;

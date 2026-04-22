@@ -59,16 +59,10 @@ namespace GlobalGames.Controllers
         {
            if(ModelState.IsValid)
             {
-                string path = string.Empty;
+                string subscriberEmail = model.Email ?? string.Empty;
 
-                if(model.Email != null)
-                {
-                    path = model.Email;
-                }
-
-                var subscriber = _converterHelper.ToSubscriber(model, path, true);
+                var subscriber = _converterHelper.ToSubscriber(model, subscriberEmail, true);
                 await _subscriberRepository.CreateAsync(subscriber);
-                //return RedirectToAction(nameof(Home));
             }
              
              return RedirectToAction(nameof(Home));
@@ -80,13 +74,11 @@ namespace GlobalGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LeadSend(LeadViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                string path = (model.Email != null && model.Nome != null && model.Message != null)
-                    ? model.Message
-                    : string.Empty;
+                string message = model.Message ?? string.Empty;
 
-                var lead = _converterHelper.ToLead(model, path, true);
+                var lead = _converterHelper.ToLead(model, message, true);
                 await _leadRepository.CreateAsync(lead);
                 return RedirectToAction(nameof(Home));
             }

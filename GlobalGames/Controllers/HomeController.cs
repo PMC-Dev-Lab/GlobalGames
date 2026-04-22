@@ -68,7 +68,6 @@ namespace GlobalGames.Controllers
 
                 var subscriber = _converterHelper.ToSubscriber(model, path, true);
                 await _subscriberRepository.CreateAsync(subscriber);
-                //return RedirectToAction(nameof(Home));
             }
              
              return RedirectToAction(nameof(Home));

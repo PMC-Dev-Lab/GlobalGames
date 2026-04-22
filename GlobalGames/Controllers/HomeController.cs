@@ -80,7 +80,7 @@ namespace GlobalGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LeadSend(LeadViewModel model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 string message = model.Message ?? string.Empty;
 

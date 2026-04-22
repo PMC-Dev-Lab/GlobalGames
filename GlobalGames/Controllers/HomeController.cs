@@ -82,11 +82,9 @@ namespace GlobalGames.Controllers
         {
             if(ModelState.IsValid)
             {
-                string path = (model.Email != null && model.Nome != null && model.Message != null)
-                    ? model.Message
-                    : string.Empty;
+                string message = model.Message ?? string.Empty;
 
-                var lead = _converterHelper.ToLead(model, path, true);
+                var lead = _converterHelper.ToLead(model, message, true);
                 await _leadRepository.CreateAsync(lead);
                 return RedirectToAction(nameof(Home));
             }

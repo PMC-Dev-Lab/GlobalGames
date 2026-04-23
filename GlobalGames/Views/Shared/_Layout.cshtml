@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="Description" content="desenvolvimento de jogos e realidade virtual">
     <meta name="Keywords" content="realidade virtual, criamos jogos, desenvolvemos jogos">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net data:; connect-src 'self'; object-src 'none'; base-uri 'self';">
     
     <title>@ViewData["Title"] - Global Games | Welcome</title>
     
@@ -45,7 +45,7 @@
     </div>
 
     <footer>
-        <p>Global Games, Copyright &copy; @DateTime.UtcNow.Year</p>  
+        <p>Global Games, Copyright &copy; @ViewData["CurrentYear"]</p>  
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

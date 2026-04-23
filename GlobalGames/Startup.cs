@@ -51,7 +51,7 @@ namespace GlobalGames
             app.UseHttpsRedirection();
 
             // Chamada modular do Middleware de Segurança
-            app.Use(SecurityMiddleware());
+            app.Use(async (context, next) => await SecurityMiddleware()(next)(context));
 
             app.UseStaticFiles();
             app.UseRouting();

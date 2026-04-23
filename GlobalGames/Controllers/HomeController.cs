@@ -60,7 +60,8 @@ namespace GlobalGames.Controllers
         {
             if (ModelState.IsValid)
             {
-                string subscriberEmail = model.Email ?? string.Empty;
+                // .Trim() aplicado para limpar espaços
+                string subscriberEmail = (model.Email ?? string.Empty).Trim();
 
                 var subscriber = _converterHelper.ToSubscriber(model, subscriberEmail, true);
                 try
@@ -68,10 +69,16 @@ namespace GlobalGames.Controllers
                     await _subscriberRepository.CreateAsync(subscriber);
                     TempData["SuccessMessage"] = "Thank you for subscribing to our newsletter!";
                 }
-                catch (Exception ex) when (ex is DbUpdateException || ex is InvalidOperationException)
+                catch (DbUpdateException ex)
                 {
-                    _logger.LogError(ex, "{ExceptionType} while creating subscriber.", ex.GetType().Name);
-                    TempData["ErrorMessage"] = "We couldn't submit your request. Please review your input and try again.";
+                    _logger.LogError(ex, "Database update error while creating subscriber.");
+                    TempData["ErrorMessage"] = "This email is already subscribed or the data is invalid.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, "Invalid operation while creating subscriber.");
+                    TempData["ErrorMessage"] = "A system error occurred. Please try again later.";
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -95,16 +102,22 @@ namespace GlobalGames.Controllers
                     TempData["SuccessMessage"] = "Thank you! Your request has been submitted successfully.";
                     return RedirectToAction(nameof(Index));
                 }
-                catch (Exception ex) when (ex is DbUpdateException || ex is InvalidOperationException)
+                catch (DbUpdateException ex)
                 {
-                    _logger.LogError(ex, "{ExceptionType} while creating lead.", ex.GetType().Name);
-                    TempData["ErrorMessage"] = "We couldn't submit your request right now. Please try again later.";
+                    _logger.LogError(ex, "Database error while creating lead.");
+                    TempData["ErrorMessage"] = "We couldn't save your request. Please check if the information is duplicated.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, "Operation error while creating lead.");
+                    TempData["ErrorMessage"] = "System is busy. Please try again later.";
                     return RedirectToAction(nameof(Index));
                 }
             }
 
             TempData["ErrorMessage"] = "Please correct the highlighted errors and try again.";
-            return RedirectToAction(nameof(Home));
+            return RedirectToAction(nameof(Index));
         }
 
 

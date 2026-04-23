@@ -95,10 +95,11 @@ namespace GlobalGames.Controllers
                     TempData["SuccessMessage"] = "Thank you! Your request has been submitted successfully.";
                     return RedirectToAction(nameof(Home));
                 }
-                catch (DbUpdateException ex)
+                catch (Exception ex) when (ex is DbUpdateException || ex is InvalidOperationException)
                 {
-                    _logger.LogError(ex, "Error while creating lead.");
-                    ModelState.AddModelError(string.Empty, "We couldn't submit your request right now. Please try again.");
+                    _logger.LogError(ex, "{ExceptionType} while creating lead.", ex.GetType().Name);
+                    TempData["ErrorMessage"] = "We couldn't submit your request right now. Please try again later.";
+                    return RedirectToAction(nameof(Home));
                 }
             }
 

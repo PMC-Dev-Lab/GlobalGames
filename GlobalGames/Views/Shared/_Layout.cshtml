@@ -52,9 +52,9 @@
     <footer>
         <p>Global Games, Copyright &copy; @currentYear</p>  
     </footer>
+    @await RenderSectionAsync("Scripts", required: false)
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true" defer></script>
     <script src="~/js/site.js" asp-append-version="true" defer></script>
-    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

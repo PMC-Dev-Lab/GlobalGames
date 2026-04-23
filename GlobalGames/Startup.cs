@@ -28,7 +28,7 @@ namespace GlobalGames
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
-                cfg.Password.RequiredLength = 6;
+                cfg.Password.RequiredLength = 10;
                 // Outras configurações de password simplificadas conforme pedido
             }).AddEntityFrameworkStores<DataContext>();
 
@@ -60,6 +60,8 @@ namespace GlobalGames
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            app.UseRouting();
+
             // MIDDLEWARE DE SEGURANÇA CORRIGIDO
             app.Use(async (context, next) =>
             {
@@ -83,7 +85,7 @@ namespace GlobalGames
                 await next();
             });
 
-            app.UseRouting();
+            
             app.UseAuthentication();
             app.UseAuthorization();
 

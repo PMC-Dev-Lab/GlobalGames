@@ -11,32 +11,23 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace GlobalGames
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
+        public Startup(IConfiguration configuration) { Configuration = configuration; }
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // 1. O DbContext DEVE ser registado primeiro (Dependência base)
             services.AddDbContext<DataContext>(cfg =>
-            {
-                cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
+                cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            // 2. Identity registado depois, consumindo o DbContext
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
-                
-                // Política de Passwords Estrita (Nível de Produção)
                 cfg.Password.RequiredLength = 10;
                 cfg.Password.RequireDigit = true;
                 cfg.Password.RequireUppercase = true;
@@ -54,29 +45,52 @@ namespace GlobalGames
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                app.UseHsts();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
+            else { app.UseExceptionHandler("/Home/Error"); app.UseHsts(); }
 
             app.UseHttpsRedirection();
 
-            // MIDDLEWARE DE SEGURANÇA (Posição Crítica: Antes de qualquer processamento dinâmico ou estático)
-            app.Use(async (context, next) =>
+            // Chamada modular do Middleware de Segurança
+            app.Use(SecurityMiddleware());
+
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
             {
-                var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
+        }
+
+        // Método extraído para melhorar a testabilidade e organização
+        private Func<HttpContext, Func<Task>, Task> SecurityMiddleware()
+        {
+            return async (context, next) =>
+            {
+                // Geração de Nonce Criptograficamente Seguro (RFC Compliance)
+                string nonce;
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    var nonceBytes = new byte[16];
+                    rng.GetBytes(nonceBytes);
+                    nonce = Convert.ToBase64String(nonceBytes);
+                }
+                
                 context.Items["CspNonce"] = nonce;
 
+                // CSP Hardened: Inclui proteção contra hijacking de formulários e exfiltração
                 var csp = $"default-src 'self'; " +
                           $"script-src 'self' 'nonce-{nonce}'; " +
                           $"style-src 'self' 'nonce-{nonce}'; " +
                           $"img-src 'self' data:; " +
                           $"font-src 'self' data:; " +
+                          $"connect-src 'self'; " + // Bloqueia chamadas AJAX externas não autorizadas
+                          $"form-action 'self'; " +  // Impede envio de formulários para sites maliciosos
+                          $"frame-src 'self'; " +    // Controla iFrames permitidos
                           $"frame-ancestors 'self'; " +
                           $"object-src 'none'; " +
                           $"base-uri 'self';";
@@ -84,23 +98,7 @@ namespace GlobalGames
                 context.Response.Headers["Content-Security-Policy"] = csp;
 
                 await next();
-            });
-
-            // Ficheiros estáticos protegidos com os cabeçalhos acima
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                // Correção da rota por defeito: action agora aponta para 'Index'
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+            };
         }
     }
 }

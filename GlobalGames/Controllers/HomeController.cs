@@ -66,7 +66,7 @@ namespace GlobalGames.Controllers
                 {
                     await _subscriberRepository.CreateAsync(subscriber);
                 }
-                catch (Exception ex)
+                catch (InvalidOperationException ex)
                 {
                     _logger.LogError(ex, "Failed to create subscriber.");
                     TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";

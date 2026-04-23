@@ -56,7 +56,8 @@ namespace GlobalGames.Controllers
         // Email Post
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EmailSend(NewsletterViewModel model)
+        [ActionName("EmailSend")]
+        public async Task<IActionResult> SendEmail(NewsletterViewModel model)
         {
             if (ModelState.IsValid)
             {

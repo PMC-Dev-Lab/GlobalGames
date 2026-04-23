@@ -23,7 +23,6 @@ namespace GlobalGames.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConverterHelper _converterHelper;
 
-
         public HomeController(
             ILogger<HomeController> logger,
             ISubscriberRepository subscriberRepository,

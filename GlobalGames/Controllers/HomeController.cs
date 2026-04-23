@@ -98,6 +98,7 @@ namespace GlobalGames.Controllers
                 try
                 {
                     await _leadRepository.CreateAsync(lead);
+                    TempData["SuccessMessage"] = "Thank you! Your request has been submitted successfully.";
                     return RedirectToAction(nameof(Home));
                 }
                 catch (DbUpdateException ex)

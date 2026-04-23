@@ -57,15 +57,24 @@ namespace GlobalGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EmailSend(NewsletterViewModel model)
         {
-           if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 string subscriberEmail = model.Email ?? string.Empty;
 
                 var subscriber = _converterHelper.ToSubscriber(model, subscriberEmail, true);
-                await _subscriberRepository.CreateAsync(subscriber);
+                try
+                {
+                    await _subscriberRepository.CreateAsync(subscriber);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to create subscriber for email {Email}", subscriberEmail);
+                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
+                    return RedirectToAction(nameof(Home));
+                }
             }
-             
-             return RedirectToAction(nameof(Home));
+
+            return RedirectToAction(nameof(Home));
         }
 
         // Lead Post

@@ -68,15 +68,9 @@ namespace GlobalGames.Controllers
                     await _subscriberRepository.CreateAsync(subscriber);
                     TempData["SuccessMessage"] = "Thank you for subscribing to our newsletter!";
                 }
-                catch (DbUpdateException ex)
+                catch (Exception ex) when (ex is DbUpdateException || ex is InvalidOperationException)
                 {
-                    _logger.LogError(ex, "Database error while creating subscriber.");
-                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
-                    return RedirectToAction(nameof(Home));
-                }
-                catch (InvalidOperationException ex)
-                {
-                    _logger.LogError(ex, "Failed to create subscriber.");
+                    _logger.LogError(ex, "{ExceptionType} while creating subscriber.", ex.GetType().Name);
                     TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
                     return RedirectToAction(nameof(Home));
                 }
@@ -98,6 +92,7 @@ namespace GlobalGames.Controllers
                 try
                 {
                     await _leadRepository.CreateAsync(lead);
+                    TempData["SuccessMessage"] = "Thank you! Your request has been submitted successfully.";
                     return RedirectToAction(nameof(Home));
                 }
                 catch (DbUpdateException ex)

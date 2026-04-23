@@ -29,7 +29,11 @@ namespace GlobalGames
             {
                 cfg.User.RequireUniqueEmail = true;
                 cfg.Password.RequiredLength = 10;
-                // Outras configurações de password simplificadas conforme pedido
+                cfg.Password.RequireDigit = true;
+		
+                cfg.Password.RequireUppercase = true;
+                cfg.Password.RequireLowercase = true;
+                cfg.Password.RequireNonAlphanumeric = true;
             }).AddEntityFrameworkStores<DataContext>();
 
             services.AddDbContext<DataContext>(cfg =>
@@ -58,9 +62,7 @@ namespace GlobalGames
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
+           
 
             // MIDDLEWARE DE SEGURANÇA CORRIGIDO
             app.Use(async (context, next) =>
@@ -86,6 +88,11 @@ namespace GlobalGames
             });
 
             
+            app.UseStaticFiles();
+
+
+            app.UseRouting();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -93,7 +100,7 @@ namespace GlobalGames
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Home}/{id?}");
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

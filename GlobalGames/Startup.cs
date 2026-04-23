@@ -4,13 +4,13 @@ using GlobalGames.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity; // Necessário para IdentityRole
-using Microsoft.EntityFrameworkCore; // Necessário para UseSqlServer
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Security.Cryptography; // Necessário para RandomNumberGenerator
+using System.Security.Cryptography;
 
 namespace GlobalGames
 {
@@ -25,21 +25,24 @@ namespace GlobalGames
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddIdentity<User, IdentityRole>(cfg =>
-            {
-                cfg.User.RequireUniqueEmail = true;
-                cfg.Password.RequiredLength = 10;
-                cfg.Password.RequireDigit = true;
-		
-                cfg.Password.RequireUppercase = true;
-                cfg.Password.RequireLowercase = true;
-                cfg.Password.RequireNonAlphanumeric = true;
-            }).AddEntityFrameworkStores<DataContext>();
-
+            // 1. O DbContext DEVE ser registado primeiro (Dependência base)
             services.AddDbContext<DataContext>(cfg =>
             {
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            // 2. Identity registado depois, consumindo o DbContext
+            services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                cfg.User.RequireUniqueEmail = true;
+                
+                // Política de Passwords Estrita (Nível de Produção)
+                cfg.Password.RequiredLength = 10;
+                cfg.Password.RequireDigit = true;
+                cfg.Password.RequireUppercase = true;
+                cfg.Password.RequireLowercase = true;
+                cfg.Password.RequireNonAlphanumeric = true;
+            }).AddEntityFrameworkStores<DataContext>();
 
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<ISubscriberRepository, SubscriberRepository>();
@@ -62,14 +65,11 @@ namespace GlobalGames
             }
 
             app.UseHttpsRedirection();
-           
 
-            // MIDDLEWARE DE SEGURANÇA CORRIGIDO
+            // MIDDLEWARE DE SEGURANÇA (Posição Crítica: Antes de qualquer processamento dinâmico ou estático)
             app.Use(async (context, next) =>
             {
-                // 1. Geração Criptograficamente Segura (16 bytes = 128 bits de entropia)
                 var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
-                
                 context.Items["CspNonce"] = nonce;
 
                 var csp = $"default-src 'self'; " +
@@ -81,15 +81,13 @@ namespace GlobalGames
                           $"object-src 'none'; " +
                           $"base-uri 'self';";
 
-                // 2. Uso de atribuição direta para evitar erros de duplicidade de header
                 context.Response.Headers["Content-Security-Policy"] = csp;
 
                 await next();
             });
 
-            
+            // Ficheiros estáticos protegidos com os cabeçalhos acima
             app.UseStaticFiles();
-
 
             app.UseRouting();
 
@@ -98,6 +96,7 @@ namespace GlobalGames
 
             app.UseEndpoints(endpoints =>
             {
+                // Correção da rota por defeito: action agora aponta para 'Index'
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");

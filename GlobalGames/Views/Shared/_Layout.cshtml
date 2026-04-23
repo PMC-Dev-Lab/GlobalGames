@@ -1,7 +1,16 @@
 ﻿@{
     var currentYear = DateTime.UtcNow.Year;
-    // Gerar um Nonce (Number used once) único para esta requisição
-    var cspNonce = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+
+    // Tenta recuperar o Nonce gerado pelo Middleware do servidor
+    var cspNonce = Context.Items["CspNonce"] as string;
+
+    if (string.IsNullOrWhiteSpace(cspNonce))
+    {
+        // Fallback defensivo: gera um nonce seguro se o middleware falhar
+        var nonceBytes = new byte[32];
+        System.Security.Cryptography.RandomNumberGenerator.Fill(nonceBytes);
+        cspNonce = Convert.ToBase64String(nonceBytes);
+    }
 }
 <!DOCTYPE html>
 <html lang="pt">
@@ -15,8 +24,8 @@
     
     <title>@ViewData["Title"] - Global Games | Welcome</title>
     
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" nonce="@cspNonce" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" nonce="@cspNonce" asp-append-version="true" />
 </head>
 
 <body>
@@ -57,7 +66,8 @@
     <script nonce="@cspNonce">
         @await RenderSectionAsync("Scripts", required: false)
     </script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script nonce="@cspNonce" src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script nonce="@cspNonce" src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

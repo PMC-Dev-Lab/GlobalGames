@@ -3,6 +3,7 @@ using GlobalGames.Data.Entities;
 using GlobalGames.Helpers;
 using GlobalGames.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -92,7 +93,7 @@ namespace GlobalGames.Controllers
                     await _leadRepository.CreateAsync(lead);
                     return RedirectToAction(nameof(Home));
                 }
-                catch (Exception ex)
+                catch (DbUpdateException ex)
                 {
                     _logger.LogError(ex, "Error while creating lead.");
                     ModelState.AddModelError(string.Empty, "We couldn't submit your request right now. Please try again.");

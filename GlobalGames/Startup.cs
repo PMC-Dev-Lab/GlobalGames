@@ -51,25 +51,7 @@ namespace GlobalGames
             app.UseHttpsRedirection();
 
             // Chamada modular do Middleware de Segurança
-            app.Use(SecurityMiddleware());
-
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
-
-        // Método extraído para melhorar a testabilidade e organização
-        private Func<RequestDelegate, RequestDelegate> SecurityMiddleware()
-        {
-            return next => async context =>
+            app.Use(async (context, next) =>
             {
                 // Geração de Nonce Criptograficamente Seguro (RFC Compliance)
                 var nonceBytes = new byte[16];
@@ -93,8 +75,20 @@ namespace GlobalGames
 
                 context.Response.Headers["Content-Security-Policy"] = csp;
 
-                await next(context);
-            };
+                await next();
+            });
+
+            app.UseStaticFiles();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

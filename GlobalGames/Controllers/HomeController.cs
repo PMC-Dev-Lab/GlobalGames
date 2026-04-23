@@ -72,7 +72,7 @@ namespace GlobalGames.Controllers
                 catch (DbUpdateException ex)
                 {
                     _logger.LogError(ex, "Database update error while creating subscriber.");
-                    TempData["ErrorMessage"] = "This email is already subscribed or the data is invalid.";
+                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (InvalidOperationException ex)

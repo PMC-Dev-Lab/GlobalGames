@@ -51,7 +51,7 @@ namespace GlobalGames
             app.UseHttpsRedirection();
 
             // Chamada modular do Middleware de Segurança
-            app.Use(SecurityMiddleware());
+            app.Use(async (context, next) => await SecurityMiddleware()(next)(context));
 
             app.UseStaticFiles();
             app.UseRouting();
@@ -72,13 +72,9 @@ namespace GlobalGames
             return next => async context =>
             {
                 // Geração de Nonce Criptograficamente Seguro (RFC Compliance)
-                string nonce;
-                using (var rng = RandomNumberGenerator.Create())
-                {
-                    var nonceBytes = new byte[16];
-                    rng.GetBytes(nonceBytes);
-                    nonce = Convert.ToBase64String(nonceBytes);
-                }
+                var nonceBytes = new byte[16];
+                RandomNumberGenerator.Fill(nonceBytes);
+                string nonce = Convert.ToBase64String(nonceBytes);
 
                 context.Items["CspNonce"] = nonce;
 

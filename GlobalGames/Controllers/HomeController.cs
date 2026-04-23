@@ -66,6 +66,7 @@ namespace GlobalGames.Controllers
                 try
                 {
                     await _subscriberRepository.CreateAsync(subscriber);
+                    TempData["SuccessMessage"] = "Thank you for subscribing to our newsletter!";
                 }
                 catch (DbUpdateException ex)
                 {

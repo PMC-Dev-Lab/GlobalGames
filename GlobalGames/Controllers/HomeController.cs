@@ -57,7 +57,7 @@ namespace GlobalGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EmailSend(NewsletterViewModel model)
         {
-           if(ModelState.IsValid)
+           if (ModelState.IsValid)
             {
                 string subscriberEmail = model.Email ?? string.Empty;
 

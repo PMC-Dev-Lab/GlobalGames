@@ -67,9 +67,9 @@ namespace GlobalGames
         }
 
         // Método extraído para melhorar a testabilidade e organização
-        private Func<HttpContext, RequestDelegate, Task> SecurityMiddleware()
+        private Func<RequestDelegate, RequestDelegate> SecurityMiddleware()
         {
-            return async (context, next) =>
+            return next => async context =>
             {
                 // Geração de Nonce Criptograficamente Seguro (RFC Compliance)
                 string nonce;
@@ -79,7 +79,7 @@ namespace GlobalGames
                     rng.GetBytes(nonceBytes);
                     nonce = Convert.ToBase64String(nonceBytes);
                 }
-                
+
                 context.Items["CspNonce"] = nonce;
 
                 // CSP Hardened: Inclui proteção contra hijacking de formulários e exfiltração

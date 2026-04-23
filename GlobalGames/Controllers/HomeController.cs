@@ -66,7 +66,6 @@ namespace GlobalGames.Controllers
             }
              
              return RedirectToAction(nameof(Home));
-            //return View(model);
         }
 
         // Lead Post

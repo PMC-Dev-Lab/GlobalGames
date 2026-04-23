@@ -1,14 +1,16 @@
 ﻿@{
-    var currentYear = DateTime.Now.Year;
+    // Otimização: UtcNow é preferível para lógica de servidor e caching
+    var currentYear = DateTime.UtcNow.Year;
 }
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="desenvolvimento de jogos e realidade virtual">
     <meta name="keywords" content="realidade virtual, criamos jogos, desenvolvemos jogos">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self';">
+    
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self';">
     
     <title>@ViewData["Title"] - Global Games | Welcome</title>
     
@@ -51,8 +53,8 @@
         <p>Global Games, Copyright &copy; @currentYear</p>  
     </footer>
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true" defer></script>
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

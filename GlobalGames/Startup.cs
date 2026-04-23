@@ -72,13 +72,9 @@ namespace GlobalGames
             return next => async context =>
             {
                 // Geração de Nonce Criptograficamente Seguro (RFC Compliance)
-                string nonce;
-                using (var rng = RandomNumberGenerator.Create())
-                {
-                    var nonceBytes = new byte[16];
-                    rng.GetBytes(nonceBytes);
-                    nonce = Convert.ToBase64String(nonceBytes);
-                }
+                var nonceBytes = new byte[16];
+                RandomNumberGenerator.Fill(nonceBytes);
+                string nonce = Convert.ToBase64String(nonceBytes);
 
                 context.Items["CspNonce"] = nonce;
 

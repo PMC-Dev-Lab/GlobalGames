@@ -3,6 +3,7 @@ using GlobalGames.Data.Entities;
 using GlobalGames.Helpers;
 using GlobalGames.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -57,15 +58,24 @@ namespace GlobalGames.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EmailSend(NewsletterViewModel model)
         {
-           if (ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 string subscriberEmail = model.Email ?? string.Empty;
 
                 var subscriber = _converterHelper.ToSubscriber(model, subscriberEmail, true);
-                await _subscriberRepository.CreateAsync(subscriber);
+                try
+                {
+                    await _subscriberRepository.CreateAsync(subscriber);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError(ex, "Failed to create subscriber.");
+                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
+                    return RedirectToAction(nameof(Home));
+                }
             }
-             
-             return RedirectToAction(nameof(Home));
+
+            return RedirectToAction(nameof(Home));
         }
 
         // Lead Post
@@ -76,10 +86,18 @@ namespace GlobalGames.Controllers
             if (ModelState.IsValid)
             {
                 string message = model.Message ?? string.Empty;
-
                 var lead = _converterHelper.ToLead(model, message, true);
-                await _leadRepository.CreateAsync(lead);
-                return RedirectToAction(nameof(Home));
+
+                try
+                {
+                    await _leadRepository.CreateAsync(lead);
+                    return RedirectToAction(nameof(Home));
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Error while creating lead.");
+                    ModelState.AddModelError(string.Empty, "We couldn't submit your request right now. Please try again.");
+                }
             }
 
             return View(model);

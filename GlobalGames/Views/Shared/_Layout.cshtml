@@ -1,15 +1,13 @@
 ﻿@{
     var currentYear = DateTime.UtcNow.Year;
 
-    // Tenta recuperar o Nonce gerado pelo Middleware do servidor
+    // Recupera o Nonce gerado obrigatoriamente no Middleware do servidor (Startup.cs)
     var cspNonce = Context.Items["CspNonce"] as string;
 
     if (string.IsNullOrWhiteSpace(cspNonce))
     {
-        // Fallback defensivo: gera um nonce seguro se o middleware falhar
-        var nonceBytes = new byte[32];
-        System.Security.Cryptography.RandomNumberGenerator.Fill(nonceBytes);
-        cspNonce = Convert.ToBase64String(nonceBytes);
+        // Princípio Fail-Fast: Impede a execução sem contexto de segurança válido
+        throw new InvalidOperationException("CSP nonce ausente. Verifique o middleware responsável no Startup.cs.");
     }
 }
 <!DOCTYPE html>
@@ -19,8 +17,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="desenvolvimento de jogos e realidade virtual">
     <meta name="keywords" content="realidade virtual, criamos jogos, desenvolvemos jogos">
-    
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-@cspNonce'; style-src 'self' 'nonce-@cspNonce'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self';">
     
     <title>@ViewData["Title"] - Global Games | Welcome</title>
     
@@ -63,10 +59,8 @@
         <p>Global Games, Copyright &copy; @currentYear</p>  
     </footer>
 
-    <script nonce="@cspNonce">
-        @await RenderSectionAsync("Scripts", required: false)
-    </script>
-    
+    @await RenderSectionAsync("Scripts", required: false)
+
     <script nonce="@cspNonce" src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     <script nonce="@cspNonce" src="~/js/site.js" asp-append-version="true"></script>
 </body>

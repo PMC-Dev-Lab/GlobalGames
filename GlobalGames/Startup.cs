@@ -3,16 +3,11 @@ using GlobalGames.Data.Entities;
 using GlobalGames.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http; // Adicionado para uso de Headers
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GlobalGames
 {
@@ -25,10 +20,8 @@ namespace GlobalGames
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // ISTO � UM UTILIZADOR COM UM ROLE
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
@@ -45,18 +38,14 @@ namespace GlobalGames
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-
             services.AddScoped<IUserHelper, UserHelper>();
-
             services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             services.AddScoped<ILeadRepository, LeadRepository>();
             services.AddScoped<IConverterHelper, ConverterHelper>();
 
-
             services.AddControllersWithViews();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -66,15 +55,39 @@ namespace GlobalGames
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
+            // --- INÍCIO DO MIDDLEWARE DE SEGURANÇA (CSP & NONCE) ---
+            app.Use(async (context, next) =>
+            {
+                // Gera o Nonce único para a requisição atual
+                var nonce = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+                
+                // Disponibiliza o Nonce para o _Layout.cshtml via HttpContext
+                context.Items["CspNonce"] = nonce;
+
+                // Define a política de segurança no cabeçalho da resposta
+                var csp = $"default-src 'self'; " +
+                          $"script-src 'self' 'nonce-{nonce}'; " +
+                          $"style-src 'self' 'nonce-{nonce}'; " +
+                          $"img-src 'self' data:; " +
+                          $"font-src 'self' data:; " +
+                          $"frame-ancestors 'self'; " +
+                          $"object-src 'none'; " +
+                          $"base-uri 'self';";
+
+                context.Response.Headers.Add("Content-Security-Policy", csp);
+
+                await next();
+            });
+            // --- FIM DO MIDDLEWARE DE SEGURANÇA ---
+
             app.UseRouting();
 
-            //
             app.UseAuthentication();
             app.UseAuthorization();
 

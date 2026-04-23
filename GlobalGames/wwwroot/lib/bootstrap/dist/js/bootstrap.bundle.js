@@ -4523,7 +4523,7 @@
 
       var isActive = $(parent).hasClass(ClassName$4.SHOW);
 
-      if (!isActive || isActive && (event.which === ESCAPE_KEYCODE || event.which === SPACE_KEYCODE)) {
+      if (!isActive || event.which === ESCAPE_KEYCODE || event.which === SPACE_KEYCODE) {
         if (event.which === ESCAPE_KEYCODE) {
           var toggle = parent.querySelector(Selector$4.DATA_TOGGLE);
           $(toggle).trigger('focus');

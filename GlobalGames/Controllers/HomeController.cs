@@ -76,10 +76,18 @@ namespace GlobalGames.Controllers
             if (ModelState.IsValid)
             {
                 string message = model.Message ?? string.Empty;
-
                 var lead = _converterHelper.ToLead(model, message, true);
-                await _leadRepository.CreateAsync(lead);
-                return RedirectToAction(nameof(Home));
+
+                try
+                {
+                    await _leadRepository.CreateAsync(lead);
+                    return RedirectToAction(nameof(Home));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error while creating lead.");
+                    ModelState.AddModelError(string.Empty, "We couldn't submit your request right now. Please try again.");
+                }
             }
 
             return View(model);

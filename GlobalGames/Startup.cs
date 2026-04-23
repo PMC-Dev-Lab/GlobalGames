@@ -3,11 +3,14 @@ using GlobalGames.Data.Entities;
 using GlobalGames.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http; // Adicionado para uso de Headers
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity; // Necessário para IdentityRole
+using Microsoft.EntityFrameworkCore; // Necessário para UseSqlServer
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Security.Cryptography; // Necessário para RandomNumberGenerator
 
 namespace GlobalGames
 {
@@ -25,12 +28,8 @@ namespace GlobalGames
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
-                cfg.Password.RequireDigit = false;
-                cfg.Password.RequiredUniqueChars = 0;
-                cfg.Password.RequireUppercase = false;
-                cfg.Password.RequireLowercase = false;
-                cfg.Password.RequireNonAlphanumeric = false;
                 cfg.Password.RequiredLength = 6;
+                // Outras configurações de password simplificadas conforme pedido
             }).AddEntityFrameworkStores<DataContext>();
 
             services.AddDbContext<DataContext>(cfg =>
@@ -61,16 +60,14 @@ namespace GlobalGames
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // --- INÍCIO DO MIDDLEWARE DE SEGURANÇA (CSP & NONCE) ---
+            // MIDDLEWARE DE SEGURANÇA CORRIGIDO
             app.Use(async (context, next) =>
             {
-                // Gera o Nonce único para a requisição atual
-                var nonce = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+                // 1. Geração Criptograficamente Segura (16 bytes = 128 bits de entropia)
+                var nonce = Convert.ToBase64String(RandomNumberGenerator.GetBytes(16));
                 
-                // Disponibiliza o Nonce para o _Layout.cshtml via HttpContext
                 context.Items["CspNonce"] = nonce;
 
-                // Define a política de segurança no cabeçalho da resposta
                 var csp = $"default-src 'self'; " +
                           $"script-src 'self' 'nonce-{nonce}'; " +
                           $"style-src 'self' 'nonce-{nonce}'; " +
@@ -80,14 +77,13 @@ namespace GlobalGames
                           $"object-src 'none'; " +
                           $"base-uri 'self';";
 
-                context.Response.Headers.Add("Content-Security-Policy", csp);
+                // 2. Uso de atribuição direta para evitar erros de duplicidade de header
+                context.Response.Headers["Content-Security-Policy"] = csp;
 
                 await next();
             });
-            // --- FIM DO MIDDLEWARE DE SEGURANÇA ---
 
             app.UseRouting();
-
             app.UseAuthentication();
             app.UseAuthorization();
 

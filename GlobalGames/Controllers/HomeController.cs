@@ -38,7 +38,7 @@ namespace GlobalGames.Controllers
             _leadRepository = leadRepository;
         }
 
-        public IActionResult Home()
+        public IActionResult Index()
         {
             return View();
         }
@@ -72,11 +72,11 @@ namespace GlobalGames.Controllers
                 {
                     _logger.LogError(ex, "{ExceptionType} while creating subscriber.", ex.GetType().Name);
                     TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
-                    return RedirectToAction(nameof(Home));
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
-            return RedirectToAction(nameof(Home));
+            return RedirectToAction(nameof(Index));
         }
 
         // Lead Post
@@ -93,17 +93,18 @@ namespace GlobalGames.Controllers
                 {
                     await _leadRepository.CreateAsync(lead);
                     TempData["SuccessMessage"] = "Thank you! Your request has been submitted successfully.";
-                    return RedirectToAction(nameof(Home));
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex) when (ex is DbUpdateException || ex is InvalidOperationException)
                 {
                     _logger.LogError(ex, "{ExceptionType} while creating lead.", ex.GetType().Name);
                     TempData["ErrorMessage"] = "We couldn't submit your request right now. Please try again later.";
-                    return RedirectToAction(nameof(Home));
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
-            return View(nameof(Home), model);
+            TempData["ErrorMessage"] = "Please correct the highlighted errors and try again.";
+            return RedirectToAction(nameof(Home));
         }
 
 

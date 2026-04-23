@@ -71,7 +71,7 @@ namespace GlobalGames.Controllers
                 catch (Exception ex) when (ex is DbUpdateException || ex is InvalidOperationException)
                 {
                     _logger.LogError(ex, "{ExceptionType} while creating subscriber.", ex.GetType().Name);
-                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
+                    TempData["ErrorMessage"] = "We couldn't submit your request. Please review your input and try again.";
                     return RedirectToAction(nameof(Index));
                 }
             }

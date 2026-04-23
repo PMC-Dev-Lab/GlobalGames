@@ -102,7 +102,7 @@ namespace GlobalGames.Controllers
                 }
             }
 
-            return View(model);
+            return View(nameof(Home), model);
         }
 
 

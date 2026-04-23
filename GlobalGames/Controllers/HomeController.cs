@@ -68,7 +68,7 @@ namespace GlobalGames.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to create subscriber for email {Email}", subscriberEmail);
+                    _logger.LogError(ex, "Failed to create subscriber.");
                     TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
                     return RedirectToAction(nameof(Home));
                 }

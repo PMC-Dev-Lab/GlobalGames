@@ -67,7 +67,7 @@ namespace GlobalGames
         }
 
         // Método extraído para melhorar a testabilidade e organização
-        private Func<HttpContext, Func<Task>, Task> SecurityMiddleware()
+        private Func<HttpContext, RequestDelegate, Task> SecurityMiddleware()
         {
             return async (context, next) =>
             {
@@ -97,7 +97,7 @@ namespace GlobalGames
 
                 context.Response.Headers["Content-Security-Policy"] = csp;
 
-                await next();
+                await next(context);
             };
         }
     }

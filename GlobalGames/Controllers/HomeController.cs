@@ -23,7 +23,6 @@ namespace GlobalGames.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConverterHelper _converterHelper;
 
-
         public HomeController(
             ILogger<HomeController> logger,
             ISubscriberRepository subscriberRepository,
@@ -56,7 +55,8 @@ namespace GlobalGames.Controllers
         // Email Post
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EmailSend(NewsletterViewModel model)
+        [ActionName("EmailSend")]
+        public async Task<IActionResult> SendEmail(NewsletterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -72,7 +72,7 @@ namespace GlobalGames.Controllers
                 catch (DbUpdateException ex)
                 {
                     _logger.LogError(ex, "Database update error while creating subscriber.");
-                    TempData["ErrorMessage"] = "This email is already subscribed or the data is invalid.";
+                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (InvalidOperationException ex)

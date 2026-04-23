@@ -66,6 +66,13 @@ namespace GlobalGames.Controllers
                 try
                 {
                     await _subscriberRepository.CreateAsync(subscriber);
+                    TempData["SuccessMessage"] = "Thank you for subscribing to our newsletter!";
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Database error while creating subscriber.");
+                    TempData["ErrorMessage"] = "We couldn't process your subscription right now. Please try again later.";
+                    return RedirectToAction(nameof(Home));
                 }
                 catch (InvalidOperationException ex)
                 {

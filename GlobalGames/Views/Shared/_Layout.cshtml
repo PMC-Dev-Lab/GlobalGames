@@ -1,6 +1,7 @@
 ﻿@{
-    // Otimização: UtcNow é preferível para lógica de servidor e caching
     var currentYear = DateTime.UtcNow.Year;
+    // Gerar um Nonce (Number used once) único para esta requisição
+    var cspNonce = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
 }
 <!DOCTYPE html>
 <html lang="pt">
@@ -10,12 +11,12 @@
     <meta name="description" content="desenvolvimento de jogos e realidade virtual">
     <meta name="keywords" content="realidade virtual, criamos jogos, desenvolvemos jogos">
     
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'nonce-@cspNonce'; style-src 'self' 'nonce-@cspNonce'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self';">
     
     <title>@ViewData["Title"] - Global Games | Welcome</title>
     
-    <link rel="stylesheet" href="~/css/style.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
 </head>
 
 <body>
@@ -52,9 +53,11 @@
     <footer>
         <p>Global Games, Copyright &copy; @currentYear</p>  
     </footer>
-    @await RenderSectionAsync("Scripts", required: false)
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true" defer></script>
-    <script src="~/js/site.js" asp-append-version="true" defer></script>
+    <script nonce="@cspNonce">
+        @await RenderSectionAsync("Scripts", required: false)
+    </script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 </body>
 </html>

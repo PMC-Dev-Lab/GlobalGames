@@ -73,7 +73,10 @@ namespace GlobalGames
                           $"object-src 'none'; " +
                           $"base-uri 'self';";
 
-                context.Response.Headers["Content-Security-Policy"] = csp;
+                if (!context.Response.Headers.ContainsKey("Content-Security-Policy"))
+                {
+                    context.Response.Headers["Content-Security-Policy"] = csp;
+                }
 
                 await next();
             });

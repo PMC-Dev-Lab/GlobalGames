@@ -103,7 +103,8 @@ namespace GlobalGames.Controllers
                 }
             }
 
-            return View(nameof(Home), model);
+            TempData["ErrorMessage"] = "Please correct the highlighted errors and try again.";
+            return RedirectToAction(nameof(Home));
         }
 
 

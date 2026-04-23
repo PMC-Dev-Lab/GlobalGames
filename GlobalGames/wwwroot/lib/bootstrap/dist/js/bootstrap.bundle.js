@@ -1992,8 +1992,8 @@
     var scrollParent = getScrollParent(children);
 
     var styles = getStyleComputedProperty(parent);
-    var borderTopWidth = parseFloat(styles.borderTopWidth, 10);
-    var borderLeftWidth = parseFloat(styles.borderLeftWidth, 10);
+    var borderTopWidth = parseFloat(styles.borderTopWidth);
+    var borderLeftWidth = parseFloat(styles.borderLeftWidth);
 
     // In cases where the parent is fixed, we must ignore negative scroll in offset calc
     if (fixedPosition && isHTML) {
@@ -2015,7 +2015,7 @@
     // the box of the documentElement, in the other cases not.
     if (!isIE10 && isHTML) {
       var marginTop = parseFloat(styles.marginTop);
-      var marginLeft = parseFloat(styles.marginLeft, 10);
+      var marginLeft = parseFloat(styles.marginLeft);
 
       offsets.top -= borderTopWidth - marginTop;
       offsets.bottom -= borderTopWidth - marginTop;
